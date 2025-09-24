@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: symfony_app
+    volumes:
+      - ./backend:/var/www
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    environment:
+      DATABASE_URL: "postgresql://app:!ChangeMe!@database:5432/app"
+
+  frontend:
+    build: ./frontend
+    container_name: codeigniter_app
+    volumes:
+      - ./frontend:/var/www/html
+    ports:
+      - "8080:80"
+
+  database:
+    image: postgis/postgis:16-3.5-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: "!ChangeMe!"
+    volumes:
+      - database_data:/var/lib/postgresql/data
+      - ./db/bd_patnuc_final.sql:/docker-entrypoint-initdb.d/bd_patnuc_final.sql:ro
+    ports:
+      - "5432:5432"
+
+volumes:
+  database_data:
